@@ -1,0 +1,1116 @@
+blueprint_version: 2.0.0
+kind: cloud_enterprise_agentic_app_builder
+name: Blueprint-Driven Autonomous Cloud App Factory
+mission: >-
+  Run in the cloud as a managed autonomous software factory that ingests product
+  documentation, compiles a machine-readable blueprint pack, builds and repairs
+  an application against a connected repository, and stops only when all formal
+  launch gates are green.
+
+product_promise: >-
+  User selects a repo, uploads app documentation, clicks Start Build, and the
+  platform continuously reads, compiles, plans, codes, tests, fixes, hardens,
+  and evaluates until the project becomes a ship candidate. Every application
+  under construction must also be continuously available in an isolated runtime
+  sandbox so the user can inspect and use the app exactly as a real user would
+  during active development.
+
+operating_model:
+  delivery_mode: cloud_managed_platform
+  user_experience:
+    required_inputs:
+      - project_name
+      - repository_binding
+      - source_documentation_upload
+      - build_policy_profile
+      - deployment_target_profile
+    primary_action: start_build
+    user_goal: launch_ready_app_without_ide_centered_workflow
+  system_goal: >-
+    Replace editor-centric AI building with a repeatable blueprint-driven build,
+    validation, and release machine.
+
+non_negotiables:
+  - source_docs_are_read_before_any_build
+  - compiled_blueprint_pack_is_the_only_runtime_source_of_truth
+  - every_change_must_map_to_a_spec_rule
+  - every_ui_surface_requires_test_and_evidence
+  - regressions_block_progress
+  - repeated_failures_trigger_recovery_or_review_queue
+  - system_runs_in_bounded_loops_not_uncontrolled_autonomy
+  - release_only_when_all_critical_gates_pass
+  - cloud_execution_must_be_isolated_per_project_and_per_run
+  - every_run_must_be_auditable
+  - deployments_require_policy_evaluation
+  - every_project_must_start_from_a_reusable_boilerplate
+  - blueprint_specs_must_live_in_the_platform_database_not_in_the_repo
+  - execution_must_be_driven_by_a_database_backed_step_plan
+  - agent_work_must_follow_the_persistent_step_plan_not_freeform_reasoning
+
+platform_architecture:
+  planes:
+    - id: control_plane
+      purpose: manage_projects_runs_policies_users_approvals_and_audit
+    - id: blueprint_plane
+      purpose: ingest_docs_compile_specs_version_blueprints_and_track_traceability
+    - id: execution_plane
+      purpose: run_isolated_build_test_fix_and_validation_workloads
+    - id: governance_plane
+      purpose: enforce_release_policy_security_audit_and_approval_gates
+    - id: template_plane
+      purpose: manage_reusable_boilerplates_starter_kits_and_stack_profiles
+    - id: workflow_plane
+      purpose: store_and_execute_detailed_database_backed_step_plans
+
+cloud_topology:
+  services:
+    portal_ui:
+      purpose: operator_web_application
+      capabilities:
+        - create_project
+        - connect_repo
+        - upload_docs
+        - choose_build_policy
+        - start_build
+        - monitor_run
+        - inspect_artifacts
+        - review_release_scorecard
+        - approve_or_block_release
+    control_api:
+      purpose: central_api_for_project_and_run_management
+      capabilities:
+        - project_management
+        - repo_binding_management
+        - doc_ingestion_jobs
+        - blueprint_compilation_jobs
+        - run_dispatch
+        - policy_evaluation
+        - release_decision_serving
+        - template_assignment
+        - step_plan_management
+    orchestrator:
+      purpose: central_brain_for_task_selection_and_run_control
+      capabilities:
+        - schedule_runs
+        - fan_out_jobs
+        - maintain_retry_limits
+        - read_compiled_blueprint_pack
+        - enforce_bounded_execution
+        - aggregate_evidence
+        - call_release_judge
+    worker_runner:
+      purpose: isolated_execution_worker_for_code_generation_and_repo_changes
+      isolation: ephemeral_container_or_pod_per_run
+    browser_runner:
+      purpose: playwright_execution_and_visual_capture
+      isolation: ephemeral_container_or_pod_per_run
+    sandbox_runtime_service:
+      purpose: expose_a_live_isolated_runtime_preview_of_each_application_build
+      capabilities:
+        - per_run_preview_url
+        - real_time_runtime_access
+        - authenticated_preview_sessions
+        - seeded_demo_data
+        - environment_reset
+        - mobile_and_desktop_preview_modes
+        - shareable_internal_preview_links
+        - preview_health_checks
+      rules:
+        - every_active_build_must_publish_a_sandbox_runtime
+        - sandbox_must_reflect_current_build_state
+        - sandbox_must_be_isolated_from_production
+        - sandbox_must_support_real_user_like_navigation_and_interaction
+    artifact_store:
+      purpose: persist_blueprints_logs_reports_screenshots_and_release_evidence
+    metadata_db:
+      purpose: persist_projects_runs_tasks_issues_policies_approvals
+    queue_bus:
+      purpose: async_job_dispatch_and_run_state_updates
+    blueprint_database:
+      purpose: persist_compiled_blueprints_rules_traceability_and_acceptance_logic
+    workflow_database:
+      purpose: persist_detailed_step_plans_execution_state_and_run_guidance
+    step_telemetry_store:
+      purpose: persist_real_time_status_history_logs_retries_and_evidence_per_step
+    template_registry:
+      purpose: store_reusable_boilerplates_by_stack_domain_and_product_type
+    secret_vault:
+      purpose: secure_storage_of_repo_tokens_test_credentials_and_deploy_keys
+    local_connector:
+      purpose: optional_desktop_bridge_for_local_repo_folder_sync
+      required_when: repository_binding_mode_is_local_folder
+    deployment_gateway:
+      purpose: deploy_ship_candidates_to_target_cloud_environments
+      supports:
+        - vercel_like_targets
+        - docker_hosts
+        - kubernetes
+        - custom_ci_cd_hooks
+
+runtime_preview_contract:
+  requirement: every_application_must_be_available_in_a_live_sandbox
+  preview_properties:
+    - isolated_from_production
+    - automatically_updated_after_successful_build_steps
+    - available_during_active_runs
+    - accessible_through_portal_ui
+    - supports_real_clicking_typing_navigation_and_submission
+    - mirrors_real_runtime_behavior_as_closely_as_possible
+    - seeded_with_safe_preview_data
+    - resettable_between_test_cycles
+  preview_outputs:
+    - preview_url
+    - preview_build_id
+    - preview_environment_status
+    - preview_seed_profile
+    - preview_health_report
+
+repository_binding:
+  supported_modes:
+    - id: git_remote
+      recommended: true
+      fields:
+        - repo_url
+        - branch
+        - auth_secret_ref
+    - id: local_folder_connector
+      recommended: true
+      fields:
+        - local_workspace_path
+        - connector_agent_id
+        - sync_policy
+    - id: uploaded_workspace_snapshot
+      recommended: false
+      fields:
+        - archive_file
+        - snapshot_label
+  runtime_rule: >-
+    All builds execute against a synchronized workspace inside the cloud worker,
+    never directly inside the browser session.
+
+project_setup_ui:
+  screens:
+    - id: project_creation
+      fields:
+        - project_name
+        - framework_profile
+        - package_manager
+        - runtime_profile
+        - boilerplate_profile
+    - id: repository_connection
+      fields:
+        - binding_mode
+        - repo_url_or_local_path
+        - branch
+        - auth_reference
+        - sync_settings
+    - id: documentation_upload
+      fields:
+        - blueprint_pdf
+        - design_docs
+        - wireframes
+        - screenshots
+        - component_docs
+        - api_docs
+        - copy_docs
+    - id: build_policy
+      fields:
+        - autonomy_level
+        - retry_limit
+        - visual_strictness
+        - accessibility_strictness
+        - release_threshold_profile
+        - human_approval_before_deploy
+    - id: run_console
+      widgets:
+        - active_phase
+        - current_task
+        - current_step_plan_stage
+        - failing_checks
+        - screenshots
+        - visual_diffs
+        - blueprint_coverage
+        - release_scorecard
+        - unresolved_ambiguities
+        - live_sandbox_status
+        - preview_url
+        - sandbox_health
+    - id: step_execution_monitor
+      purpose: real_time_visibility_into_every_smallest_execution_step
+      layout:
+        type: split_panel
+        left_panel: structured_step_tree
+        right_panel: status_and_log_panel
+      widgets:
+        - phase_stage_step_task_hierarchy
+        - fixed_step_row_structure
+        - status_badge
+        - retry_counter
+        - active_loop_indicator
+        - started_at
+        - last_updated_at
+        - elapsed_time
+        - owning_agent
+        - blocking_dependency
+        - evidence_links
+        - open_log_modal_action
+        - open_failure_details_action
+      row_schema:
+        - sequence_id
+        - phase_name
+        - stage_name
+        - step_name
+        - task_name
+        - agent_name
+        - current_status
+        - retry_count
+        - pass_condition
+        - last_message
+      status_model:
+        green: completed_and_verified
+        orange: running_retrying_or_waiting_on_dependency
+        red: failed_or_blocked
+      behavior_rules:
+        - every_step_must_be_visible_in_the_monitor
+        - every_step_must_follow_the_same_fixed_structure
+        - clicking_a_step_opens_its_log_modal
+        - clicking_a_step_shows_evidence_and_failure_history
+        - a_step_may_only_close_when_status_is_green
+        - any_orange_or_red_step_must_remain_in_active_loop_until_resolved_or_escalated_by_policy
+        - parent_stages_cannot_turn_green_if_any_child_step_is_not_green
+    - id: sandbox_preview
+      widgets:
+        - live_preview_url
+        - open_in_new_tab
+        - mobile_frame_preview
+        - desktop_frame_preview
+        - seeded_test_accounts
+        - reset_sandbox_state
+        - current_build_commit
+        - runtime_console_summary
+    - id: release_verdict
+      widgets:
+        - ship_candidate_status
+        - blockers
+        - critical_flow_status
+        - blueprint_compliance_score
+        - design_fidelity_score
+        - deployment_readiness
+        - matched_boilerplate_profile
+        - executed_step_plan_summary
+        - step_health_summary
+
+inputs:
+  source_documents:
+    required:
+      - /workspace/blueprint/source/**/*.pdf
+      - /workspace/blueprint/source/**/*.md
+      - /workspace/blueprint/source/**/*.txt
+      - /workspace/blueprint/source/**/*.json
+      - /workspace/blueprint/source/**/*.yaml
+      - /workspace/blueprint/source/screens/**/*
+      - /workspace/blueprint/source/wireframes/**/*
+    optional:
+      - /workspace/blueprint/source/copy/**/*
+      - /workspace/blueprint/source/api-contracts/**/*
+      - /workspace/blueprint/source/design-tokens/**/*
+      - /workspace/blueprint/source/user-flows/**/*
+  synchronized_repository:
+    path: /workspace/app
+  artifacts_root:
+    path: /workspace/artifacts
+  database_backed_runtime_sources:
+    blueprint_source_of_truth: blueprint_database
+    step_plan_source_of_truth: workflow_database
+    boilerplate_source_of_truth: template_registry
+    path: /workspace/artifacts
+
+runtime_contract:
+  mode: autonomous_continuous_loop
+  stop_condition: all_release_gates_green_and_deployable_ship_candidate_created
+  rerun_policy: always_use_database_backed_compiled_blueprint_and_step_plan
+  source_doc_reingestion_only_when:
+    - source_hash_changed
+    - blueprint_schema_invalid
+    - ambiguity_resolution_requested
+  forbidden_behaviors:
+    - freeform_reinterpretation_of_docs_on_every_run
+    - large_unbounded_repo_writes
+    - marking_done_without_evidence
+    - retrying_same_fix_indefinitely
+    - deploying_without_release_judge_pass
+    - mutating_prod_without_explicit_policy_allowance
+    - writing_blueprint_files_into_the_application_repo
+    - bypassing_database_backed_step_plan_guidance
+  startup_requirements:
+    - select_matching_boilerplate
+    - hydrate_workspace_from_boilerplate
+    - load_compiled_blueprint_from_database
+    - load_step_plan_from_database
+    - map_repo_state_against_step_plan
+
+agents:
+  - id: doc_inventory_agent
+    responsibility:
+      - discover_source_documents
+      - fingerprint_files
+      - classify_document_type
+      - rank_source_authority
+      - build_document_manifest
+    outputs:
+      - /workspace/blueprint/compiled/document-manifest.yaml
+  - id: section_extractor_agent
+    responsibility:
+      - split_documents_into_semantic_sections
+      - identify_vision_flows_pages_components_tokens_states
+      - extract_quotes_and_normalized_rules
+    outputs:
+      - /workspace/blueprint/compiled/extracted-sections.yaml
+  - id: conflict_resolver_agent
+    responsibility:
+      - detect_rule_conflicts
+      - apply_source_priority
+      - emit_open_questions
+    outputs:
+      - /workspace/blueprint/compiled/open-questions.yaml
+      - /workspace/blueprint/compiled/conflicts.yaml
+  - id: spec_compiler_agent
+    responsibility:
+      - compile_runtime_blueprint_pack
+      - normalize_human_language_to_schemas
+      - attach_traceability_links
+      - compute_confidence_scores
+      - version_compiled_pack
+      - persist_compiled_specs_into_blueprint_database
+    outputs:
+      - blueprint_database.blueprint_manifest
+      - blueprint_database.product_vision
+      - blueprint_database.ux_principles
+      - blueprint_database.navigation
+      - blueprint_database.routes
+      - blueprint_database.modules
+      - blueprint_database.pages
+      - blueprint_database.components
+      - blueprint_database.states
+      - blueprint_database.flows
+      - blueprint_database.design_tokens
+      - blueprint_database.interaction_patterns
+      - blueprint_database.copy_rules
+      - blueprint_database.accessibility_rules
+      - blueprint_database.acceptance_criteria
+      - blueprint_database.test_matrix
+      - blueprint_database.release_gates
+      - blueprint_database.deployment_gates
+      - blueprint_database.traceability
+      - blueprint_database.coverage_report
+  - id: template_selector_agent
+    responsibility:
+      - match_project_to_best_reusable_boilerplate
+      - score_template_fit
+      - select_stack_profile
+      - hydrate_workspace_from_template_registry
+    outputs:
+      - /workspace/artifacts/reports/template-selection.yaml
+      - /workspace/artifacts/reports/template-hydration.yaml
+  - id: step_plan_compiler_agent
+    responsibility:
+      - generate_a_detailed_execution_plan_from_blueprint_and_template
+      - split_plan_into_phases_stages_tasks_and_checks
+      - persist_step_plan_into_workflow_database
+      - attach_dependencies_and_exit_criteria
+    outputs:
+      - workflow_database.step_plan_manifest
+      - workflow_database.phase_plan
+      - workflow_database.stage_plan
+      - workflow_database.task_plan
+      - workflow_database.validation_plan
+      - workflow_database.release_path
+  - id: repo_scanner_agent
+    responsibility:
+      - inspect_current_codebase
+      - map_existing_routes_components_tests
+      - compare_repo_to_compiled_blueprint_pack
+    outputs:
+      - /workspace/artifacts/reports/repo-scan.json
+      - /workspace/artifacts/reports/gap-report.yaml
+  - id: planner_agent
+    responsibility:
+      - prioritize_missing_or_failing_work
+      - enforce_dependency_order
+      - create_bounded_tasks
+      - keep_release_goal_path_current
+      - derive_next_action_strictly_from_workflow_database
+      - emit_step_level_execution_updates
+    outputs:
+      - /workspace/artifacts/tasks/backlog.yaml
+      - /workspace/artifacts/tasks/next-task.yaml
+      - /workspace/artifacts/reports/step-plan-progress.yaml
+  - id: step_monitor_agent
+    responsibility:
+      - persist_every_phase_stage_step_task_transition
+      - assign_green_orange_red_status
+      - store_retry_history_and_loop_state
+      - publish_live_step_monitor_feed_to_portal_ui
+      - attach_logs_and_evidence_to_each_step
+    outputs:
+      - step_telemetry_store.current_step_feed
+      - step_telemetry_store.step_history
+      - /workspace/artifacts/reports/step-monitor-summary.yaml
+  - id: architect_agent
+    responsibility:
+      - enforce_system_architecture
+      - define_folder_patterns
+      - define_state_and_data_contracts
+      - block_structural_drift
+    outputs:
+      - /workspace/artifacts/reports/architecture-guard.yaml
+  - id: builder_agent
+    responsibility:
+      - generate_or_modify_code
+      - create_tests_alongside_features
+      - update_docs_and_task_evidence
+      - prepare_cloud_ready_runtime_artifacts
+    outputs:
+      - git_diff
+      - /workspace/artifacts/logs/build-step.log
+  - id: qa_agent
+    responsibility:
+      - run_typecheck
+      - run_lint
+      - run_unit_tests
+      - run_integration_tests
+      - run_e2e_tests
+      - run_accessibility_checks
+      - run_visual_regression
+      - run_build
+      - run_deploy_smoke_tests
+    outputs:
+      - /workspace/artifacts/reports/qa-summary.yaml
+      - /workspace/artifacts/junit/**/*.xml
+      - /workspace/artifacts/coverage/**/*
+  - id: ui_robot_agent
+    responsibility:
+      - open_app_in_browser
+      - execute_critical_flows
+      - capture_route_state_screenshots
+      - detect_layout_breakage
+    outputs:
+      - /workspace/artifacts/screenshots/**/*
+      - /workspace/artifacts/reports/ui-robot.yaml
+  - id: design_fidelity_agent
+    responsibility:
+      - compare_ui_to_compiled_design_rules
+      - inspect_spacing_hierarchy_tokens_states
+      - flag_visual_and_ux_deviations
+    outputs:
+      - /workspace/artifacts/reports/design-fidelity.yaml
+      - /workspace/artifacts/visual-diffs/**/*
+  - id: fixer_agent
+    responsibility:
+      - classify_failures
+      - attempt_targeted_repairs
+      - rollback_bad_patches
+      - retry_with_limits
+    outputs:
+      - /workspace/artifacts/reports/failure-classification.yaml
+      - /workspace/artifacts/reports/recovery-actions.yaml
+  - id: release_judge_agent
+    responsibility:
+      - read_all_evidence
+      - evaluate_release_gates
+      - mark_ship_candidate_or_continue
+      - authorize_deployment_candidate_only_when_allowed
+    outputs:
+      - /workspace/artifacts/release/release-decision.yaml
+  - id: deployment_agent
+    responsibility:
+      - package_runtime
+      - validate_env_contract
+      - deploy_ship_candidate
+      - run_post_deploy_smoke_checks
+      - emit_deployment_verdict
+    outputs:
+      - /workspace/artifacts/release/deployment-report.yaml
+      - /workspace/artifacts/release/runtime-endpoints.yaml
+  - id: sandbox_agent
+    responsibility:
+      - provision_preview_environment_per_run
+      - publish_live_preview_url
+      - seed_preview_data
+      - keep_sandbox_in_sync_with_latest_valid_build
+      - run_sandbox_health_checks
+      - reset_preview_state_when_required
+    outputs:
+      - /workspace/artifacts/release/sandbox-runtime.yaml
+      - /workspace/artifacts/reports/sandbox-health.yaml
+
+compiled_blueprint_pack:
+  storage_mode: database_backed
+  repo_policy: no_blueprint_files_inside_application_repo
+  schemas:
+    blueprint-manifest:
+      fields:
+        - blueprint_id
+        - source_hashes
+        - compiler_version
+        - generated_at
+        - document_count
+        - confidence_summary
+        - unresolved_questions_count
+        - deployment_profile
+    product-vision:
+      fields:
+        - product_name
+        - positioning
+        - design_goals
+        - visual_direction
+        - operating_context
+    ux-principles:
+      fields:
+        - principles[].id
+        - principles[].rule
+        - principles[].rationale
+        - principles[].priority
+    navigation:
+      fields:
+        - navigation_model
+        - primary_tabs
+        - persistent_regions
+        - route_groups
+    routes:
+      fields:
+        - routes[].id
+        - routes[].path
+        - routes[].auth_required
+        - routes[].layout
+        - routes[].linked_page_id
+    modules:
+      fields:
+        - modules[].id
+        - modules[].name
+        - modules[].purpose
+        - modules[].dependencies
+    pages:
+      fields:
+        - pages[].id
+        - pages[].route
+        - pages[].goal
+        - pages[].required_sections
+        - pages[].required_components
+        - pages[].required_states
+        - pages[].primary_actions
+        - pages[].data_dependencies
+        - pages[].responsive_rules
+        - pages[].acceptance_refs
+    components:
+      fields:
+        - components[].id
+        - components[].category
+        - components[].variants
+        - components[].props
+        - components[].states
+        - components[].token_rules
+        - components[].accessibility_rules
+        - components[].placement_rules
+    states:
+      fields:
+        - states[].id
+        - states[].applies_to
+        - states[].required_ui
+        - states[].entry_conditions
+    flows:
+      fields:
+        - flows[].id
+        - flows[].name
+        - flows[].steps
+        - flows[].success_condition
+        - flows[].error_paths
+        - flows[].max_steps
+    design-tokens:
+      fields:
+        - color
+        - spacing
+        - typography
+        - radius
+        - shadow
+        - icon
+        - zIndex
+        - motion
+        - layout
+    interaction-patterns:
+      fields:
+        - patterns[].id
+        - patterns[].trigger
+        - patterns[].transition
+        - patterns[].feedback
+        - patterns[].motion_constraints
+    copy-rules:
+      fields:
+        - tone
+        - vocabulary
+        - label_rules
+        - critical_action_copy
+        - error_message_rules
+    accessibility-rules:
+      fields:
+        - focus_visibility
+        - keyboard_support
+        - aria_requirements
+        - contrast_targets
+        - reduced_motion_behavior
+    acceptance-criteria:
+      fields:
+        - targets[].id
+        - targets[].must_have
+        - targets[].must_not_have
+        - targets[].behavior_rules
+        - targets[].evidence_required
+    test-matrix:
+      fields:
+        - targets[].id
+        - targets[].unit
+        - targets[].integration
+        - targets[].e2e
+        - targets[].a11y
+        - targets[].visual
+        - targets[].performance_smoke
+    release-gates:
+      fields:
+        - gates[].id
+        - gates[].description
+        - gates[].severity
+        - gates[].pass_condition
+    deployment-gates:
+      fields:
+        - gates[].id
+        - gates[].description
+        - gates[].env_requirements
+        - gates[].post_deploy_checks
+    traceability:
+      fields:
+        - rules[].id
+        - rules[].derived_from
+        - rules[].confidence
+        - rules[].ambiguity
+
+workflow_step_plan:
+  storage_mode: database_backed
+  purpose: govern_every_run_with_a_persistent_detailed_execution_path
+  hierarchy:
+    - program
+    - phase
+    - stage
+    - step
+    - task
+    - check
+  required_entities:
+    phase:
+      - phase_id
+      - goal
+      - dependencies
+      - exit_criteria
+    stage:
+      - stage_id
+      - phase_id
+      - objective
+      - order_index
+      - gate_rules
+    step:
+      - step_id
+      - stage_id
+      - instruction
+      - expected_inputs
+      - expected_outputs
+      - rollback_rule
+      - retry_policy
+      - loop_until_green
+      - status_projection_rule
+    task:
+      - task_id
+      - step_id
+      - task_type
+      - bounded_scope
+      - target_surfaces
+      - derived_from_blueprint_rules
+      - required_tests
+      - evidence_required
+    check:
+      - check_id
+      - linked_task_id
+      - validation_type
+      - pass_condition
+      - failure_action
+
+step_status_system:
+  source_of_truth: step_telemetry_store
+  statuses:
+    green:
+      meaning: step_completed_and_verified
+      exit_rule: all_pass_conditions_satisfied_and_evidence_attached
+    orange:
+      meaning: step_running_retrying_waiting_or_under_validation
+      exit_rule: remain_active_until_green_or_policy_driven_red
+    red:
+      meaning: step_failed_blocked_or_exhausted_retry_budget
+      exit_rule: remain_visible_and_reenter_loop_only_if_policy_allows
+  ui_rules:
+    - every_step_displays_exactly_one_status
+    - color_status_must_be_visible_in_list_and_modal
+    - status_changes_must_be_timestamped
+    - retries_must_be_counted_and_displayed
+    - log_modal_must_show_full_attempt_history
+    - evidence_modal_must_show_last_pass_fail_outputs
+  loop_rule:
+    - each_step_continues_in_execution_loop_until_status_green_unless_blocked_by_global_policy
+    - no_stage_or_phase_can_be_marked_complete_while_any_child_step_is_orange_or_red
+
+repo_structure:
+  root: /workspace
+  directories:
+    - /workspace/app
+    - /workspace/agent
+    - /workspace/portal-ui
+    - /workspace/control-api
+    - /workspace/blueprint/source
+    - /workspace/blueprint/compiled
+    - /workspace/artifacts/logs
+    - /workspace/artifacts/reports
+    - /workspace/artifacts/screenshots
+    - /workspace/artifacts/visual-diffs
+    - /workspace/artifacts/junit
+    - /workspace/artifacts/tasks
+    - /workspace/artifacts/release
+    - /workspace/artifacts/history
+    - /workspace/cache
+
+recommended_platform_stack:
+  frontend:
+    portal: nextjs_typescript
+    app_targets: nextjs_react_typescript_strict
+  backend:
+    control_api: fastapi_or_nestjs
+    metadata_db: postgres
+    blueprint_database: postgres_or_document_db
+    workflow_database: postgres
+    queue_bus: redis_or_managed_queue
+    artifact_store: s3_compatible
+    template_registry: object_storage_plus_metadata_index
+  execution:
+    orchestrator: python
+    worker_isolation: docker_or_kubernetes_jobs
+    browser_automation: playwright
+  testing:
+    unit: vitest
+    integration: testing_library
+    e2e: playwright
+    accessibility: axe
+    visual: playwright_snapshots
+  security:
+    auth: sso_ready
+    secrets: vault_backed
+    authorization: rbac
+    auditing: immutable_run_logs
+
+container_and_cloud_deployment:
+  local_dev_mode:
+    orchestrated_by: docker_compose
+    purpose: platform_development_and_internal_testing
+  enterprise_runtime_mode:
+    orchestrated_by: kubernetes_or_managed_container_platform
+    purpose: isolated_project_runs_at_scale
+  required_service_definitions:
+    - portal-ui
+    - control-api
+    - orchestrator
+    - worker-runner
+    - browser-runner
+    - sandbox-runtime-service
+    - artifact-store
+    - metadata-db
+    - blueprint-database
+    - workflow-database
+    - step-telemetry-store
+    - template-registry
+    - queue-bus
+    - secret-vault
+    - local-connector_optional
+    - deployment-gateway
+
+orchestrator_loop:
+  pseudocode:
+    - select_best_matching_boilerplate_from_template_registry
+    - hydrate_workspace_from_boilerplate
+    - load_compiled_blueprint_from_blueprint_database
+    - load_detailed_step_plan_from_workflow_database
+    - validate_blueprint_and_step_plan_integrity
+    - if_source_hash_changed_then_recompile_blueprint_and_regenerate_step_plan
+    - synchronize_repository_into_run_workspace
+    - scan_repo_state
+    - map_repo_progress_against_step_plan
+    - update_step_monitor_with_current_statuses
+    - choose_next_step_and_bounded_task_from_database
+    - execute_architect_guard
+    - execute_builder_task
+    - persist_step_logs_retry_state_and_outputs
+    - run_full_validation_chain
+    - capture_ui_evidence
+    - evaluate_design_fidelity
+    - classify_failures_if_any
+    - repair_or_rollback_with_retry_limits
+    - update_coverage_traceability_and_step_progress
+    - recompute_green_orange_red_statuses
+    - evaluate_release_gates
+    - if_release_gates_green_then_prepare_ship_candidate
+    - if_deploy_policy_allows_then_execute_deployment_agent
+    - run_post_deploy_smoke_checks
+    - provision_or_refresh_sandbox_preview
+    - validate_preview_health_and_runtime_access
+    - emit_final_verdict
+    - repeat_until_all_critical_gates_green_and_ship_candidate_exists
+
+task_model:
+  task_fields:
+    - task_id
+    - type
+    - priority
+    - derived_from_rules
+    - target_files
+    - success_conditions
+    - max_patch_size
+    - retry_limit
+    - evidence_required
+  task_types:
+    - foundation
+    - page_build
+    - component_build
+    - state_completion
+    - flow_completion
+    - test_generation
+    - bug_fix
+    - accessibility_fix
+    - visual_fix
+    - release_hardening
+    - deploy_prep
+
+bounded_execution_rules:
+  max_files_changed_per_task: 12
+  max_retry_per_issue: 3
+  require_test_with_ui_change: true
+  require_traceability_update: true
+  require_evidence_bundle_before_done: true
+  rollback_on_new_critical_regression: true
+  block_deploy_if_release_judge_failed: true
+
+validation_chain:
+  commands:
+    - pnpm typecheck
+    - pnpm lint
+    - pnpm test
+    - pnpm test:integration
+    - pnpm test:e2e
+    - pnpm test:a11y
+    - pnpm test:visual
+    - pnpm build
+    - pnpm test:deploy-smoke
+    - pnpm test:sandbox-smoke
+  evidence_outputs:
+    - junit_reports
+    - coverage_reports
+    - screenshots
+    - visual_diffs
+    - console_logs
+    - performance_smoke_summary
+    - deployment_smoke_summary
+    - sandbox_preview_summary
+
+ui_robot_contract:
+  required_viewports:
+    - mobile_small
+    - mobile_large
+    - tablet
+    - desktop
+  required_state_capture:
+    - default
+    - loading
+    - empty
+    - success
+    - error
+    - modal_open
+  required_checks:
+    - no_overflow
+    - no_overlap
+    - no_hidden_primary_cta
+    - no_console_errors
+    - navigation_consistency
+    - focus_order_sanity
+
+release_gates:
+  critical:
+    - all_required_routes_exist
+    - all_critical_flows_pass_e2e
+    - no_build_failures
+    - no_runtime_errors_on_core_routes
+    - no_critical_accessibility_failures
+    - no_critical_visual_regressions
+    - no_open_p0_or_p1_failures
+    - blueprint_coverage_threshold_met
+    - deployment_profile_valid
+    - deploy_smoke_checks_green
+    - live_sandbox_available
+    - sandbox_health_checks_green
+  recommended_thresholds:
+    route_coverage_percent: 100
+    component_coverage_percent: 100
+    critical_flow_pass_percent: 100
+    state_coverage_percent: 100
+    acceptance_criteria_pass_percent: 95
+    design_token_compliance_percent: 95
+    accessibility_rule_pass_percent: 95
+    deployment_smoke_pass_percent: 100
+
+blueprint_coverage_model:
+  metrics:
+    - routes_implemented
+    - routes_validated
+    - components_defined
+    - components_implemented
+    - pages_defined
+    - pages_completed
+    - flows_defined
+    - flows_e2e_pass
+    - states_defined
+    - states_validated
+    - acceptance_criteria_passed
+    - token_compliance
+    - accessibility_compliance
+    - deployment_readiness
+    - sandbox_runtime_readiness
+  output_file: /workspace/artifacts/reports/blueprint-coverage.yaml
+
+state_persistence:
+  persisted_between_reruns:
+    - compiled_blueprint_in_blueprint_database
+    - source_hashes
+    - backlog
+    - issue_history
+    - retry_counters
+    - screenshot_baselines
+    - visual_baselines
+    - release_score_history
+    - repo_scan_cache
+    - deployment_profiles
+    - template_selection_history
+    - workflow_database_step_progress
+    - step_telemetry_history
+
+enterprise_controls:
+  security:
+    - sso_support
+    - rbac
+    - scoped_repo_credentials
+    - vault_backed_secrets
+    - immutable_audit_logs
+  governance:
+    - manual_approval_lane_for_release
+    - manual_approval_lane_for_visual_baseline_update
+    - ambiguity_review_queue
+    - policy_driven_blockers
+  multi_tenancy:
+    - isolated_namespaces_per_project
+    - isolated_artifact_paths_per_project
+    - isolated_secret_scopes_per_project
+    - isolated_worker_runtime_per_run
+
+control_interface:
+  api_endpoints:
+    - POST /projects
+    - POST /projects/:id/repository
+    - POST /projects/:id/documents
+    - POST /projects/:id/compile-blueprint
+    - POST /projects/:id/runs
+    - GET /runs/:id/status
+    - GET /runs/:id/artifacts
+    - GET /runs/:id/release-score
+    - POST /runs/:id/approve-release
+    - POST /runs/:id/retry
+  cli_commands:
+    - agent init
+    - agent ingest-docs
+    - agent compile-blueprint
+    - agent scan-repo
+    - agent run-once
+    - agent run-loop
+    - agent retry-failures
+    - agent release-check
+    - agent deploy
+    - agent report
+
+phase_roadmap:
+  phase_1_platform_kernel:
+    goals:
+      - control_api
+      - orchestrator
+      - worker_runner
+      - browser_runner
+      - artifact_store
+      - metadata_db
+      - blueprint_database
+      - workflow_database
+      - step_telemetry_store
+      - template_registry
+      - queue_bus
+  phase_2_blueprint_intelligence:
+    goals:
+      - doc_inventory_agent
+      - section_extractor_agent
+      - conflict_resolver_agent
+      - spec_compiler_agent
+      - traceability_engine
+      - template_selector_agent
+      - step_plan_compiler_agent
+  phase_3_autonomous_builder:
+    goals:
+      - repo_scanner_agent
+      - planner_agent
+      - architect_agent
+      - builder_agent
+      - qa_agent
+      - fixer_agent
+  phase_4_launch_readiness:
+    goals:
+      - ui_robot_agent
+      - design_fidelity_agent
+      - release_judge_agent
+      - deployment_agent
+      - sandbox_agent
+      - deployment_smoke_checks
+      - sandbox_health_checks
+  phase_5_enterprise_portal:
+    goals:
+      - portal_ui
+      - approvals
+      - scorecards
+      - org_policies
+      - local_connector
+      - step_execution_monitor_page
+      - status_log_modal
+      - live_step_telemetry_feed
+
+success_definition:
+  description: >-
+    The platform is successful when a user can connect a repository, upload app
+    documentation, select a reusable boilerplate, click Start Build in the cloud
+    UI, and the system can autonomously compile the blueprint into the database,
+    generate and persist a detailed step plan in the database, hydrate the
+    project from the selected boilerplate, build the application, repair defects,
+    validate launch readiness, and produce a deployable ship candidate with full
+    evidence and policy compliance. Every active application run must also be
+    exposed through a live sandbox preview so the user can inspect the runtime
+    experience exactly as an end user would.
+
+final_rule:
+  statement: >-
+    The system does not stop because the app feels done. The system stops only
+    when the compiled blueprint pack, test matrix, design fidelity checks,
+    deployment checks, and release gates all agree that the application is ready
+    to launch.

@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A project in the Cloud App Factory.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier." },
+        "name": { "type": "string", "description": "Name of the project." },
+        "repo_url": { "type": "string", "description": "URL of the repository." },
+        "branch": { "type": "string", "description": "Git branch." },
+        "auth_reference": { "type": "string", "description": "Auth reference." },
+        "sync_settings": { "type": "string", "description": "Sync settings." },
+        "framework": { "type": "string", "description": "Framework used." },
+        "deployment_target": { "type": "string", "description": "Deployment target." },
+        "status": { "type": "string", "description": "Current status." },
+        "policy": { "type": "string", "description": "JSON policy." },
+        "verdict": { "type": "string", "description": "JSON verdict." },
+        "created_at": { "type": "string", "format": "date", "description": "Creation timestamp." }
+      },
+      "required": ["id", "name"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "A document associated with a project.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier." },
+        "project_id": { "type": "string", "description": "ID of the project." },
+        "name": { "type": "string", "description": "Name of the document." },
+        "type": { "type": "string", "description": "Type of the document." },
+        "content": { "type": "string", "description": "Content of the document." },
+        "uploaded_at": { "type": "string", "format": "date", "description": "Upload timestamp." }
+      },
+      "required": ["id", "project_id", "name"]
+    },
+    "Run": {
+      "title": "Run",
+      "description": "A build run for a project.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier." },
+        "project_id": { "type": "string", "description": "ID of the project." },
+        "status": { "type": "string", "description": "Status of the run." },
+        "phase": { "type": "string", "description": "Current phase." },
+        "logs": { "type": "string", "description": "Logs." },
+        "started_at": { "type": "string", "format": "date", "description": "Start timestamp." }
+      },
+      "required": ["id", "project_id"]
+    },
+    "Artifact": {
+      "title": "Artifact",
+      "description": "An artifact produced by a run.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier." },
+        "run_id": { "type": "string", "description": "ID of the run." },
+        "name": { "type": "string", "description": "Name of the artifact." },
+        "type": { "type": "string", "description": "Type of the artifact." },
+        "url": { "type": "string", "description": "URL of the artifact." },
+        "created_at": { "type": "string", "format": "date", "description": "Creation timestamp." }
+      },
+      "required": ["id", "run_id", "name"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "Project" },
+      "description": "Projects collection."
+    },
+    "/projects/{projectId}/documents/{documentId}": {
+      "schema": { "$ref": "Document" },
+      "description": "Documents collection."
+    },
+    "/projects/{projectId}/runs/{runId}": {
+      "schema": { "$ref": "Run" },
+      "description": "Runs collection."
+    },
+    "/runs/{runId}/artifacts/{artifactId}": {
+      "schema": { "$ref": "Artifact" },
+      "description": "Artifacts collection."
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Cloud App Factory",
+  "description": "A blueprint-driven autonomous cloud application factory for building, testing, and deploying apps.",
+  "requestFramePermissions": []
+}
